@@ -3,6 +3,12 @@ name = "rfc"
 version = "0.1.0"
 authors = ["Casey Robinson <casey@rampantmonkey.com>", "Scott Steele <scottlsteele@gmail.com>"]
 
+homepage = "https://github.com/scooter-dangle/rfc-rs"
+repository = "https://github.com/scooter-dangle/rfc-rs"
+description = "A lil helper tool to automate some of the tedium in mimicking Rust's RFC process"
+
+license = "Apache-2.0"
+
 [[bin]]
 name = "rfc"
 path = "src/main.rs"
