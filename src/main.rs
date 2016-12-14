@@ -1,4 +1,7 @@
+#[macro_use]
+extern crate lazy_static;
 extern crate regex;
+use regex::Regex;
 extern crate docopt;
 extern crate time;
 
@@ -19,15 +22,20 @@ Options:
 ";
 
 use docopt::Docopt;
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::io::{BufReader, BufRead, Read, Write};
+use std::fs::{self, File};
+use std::io::{self, BufReader, BufRead, Read, Write};
+use std::env;
 use std::ascii::AsciiExt;
 
 static RFC_DIR: &'static str = "./rfcs";
-static PR_PATH: &'static str = "https://github.com/distil/plt_moirai/pull";
-static PROJECT_NAME: &'static str = "moirai";
+
+lazy_static! {
+    static ref PR_PATH: String = pull_request_path();
+}
+
+lazy_static! {
+    static ref PROJECT_NAME: String = project_name();
+}
 
 use std::process::Command;
 
@@ -46,6 +54,33 @@ macro_rules! map_err_display {
 
 macro_rules! expect_file_line {
     ($thing:expr) => { $thing.expect(&format!("{}:{}", file!(), line!())) }
+}
+
+fn pull_request_path() -> String {
+    env::var("PR_PATH").ok()
+        .or_else(|| {
+            cmd!("git", "config", "--get", "remote.origin.url").ok()
+                // TODO improve the following logic
+                .and_then(|url| {
+                    let rx = Regex::new(r#"\Agit@github\.com:(.+)\.git(?:\r?\n)?\z"#).unwrap();
+                    rx.captures(&url).map(|captures| {
+                        String::from("https://github.com/")
+                            + captures.at(1).unwrap()
+                            + "/pull"
+                    })
+                })
+        })
+        .unwrap_or_default()
+}
+
+fn project_name() -> String {
+    env::var("PROJECT_NAME").ok()
+        .unwrap_or_else(|| {
+            env::current_dir().unwrap()
+                .file_name()
+                .map(|name| name.to_string_lossy().into_owned())
+                .unwrap()
+        })
 }
 
 fn main() {
@@ -155,11 +190,14 @@ fn populate_rfc_pr(filename: &str, tag: &str, pr_id: &str) -> Result<(), String>
         buffer
     };
 
+    let project_name: &String = &PROJECT_NAME;
+    let pr_path: &String = &PR_PATH;
+
     buffer = buffer.replace(&format!("{}: (leave this empty)", tag),
                             &format!("{tag}: [{project_name}#{pr_id}]({pr_path}/{pr_id})",
                             tag = tag,
-                            project_name = PROJECT_NAME,
-                            pr_path = PR_PATH,
+                            project_name = project_name,
+                            pr_path = pr_path,
                             pr_id = pr_id));
 
     let mut out_file = File::create(filename.clone()).unwrap();

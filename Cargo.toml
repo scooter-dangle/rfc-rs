@@ -1,6 +1,6 @@
 [package]
 name = "rfc"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Casey Robinson <casey@rampantmonkey.com>", "Scott Steele <scottlsteele@gmail.com>"]
 
 homepage = "https://github.com/scooter-dangle/rfc-rs"
@@ -15,5 +15,6 @@ path = "src/main.rs"
 
 [dependencies]
 regex = "0.1"
+lazy_static = "0.1.*"
 docopt = "0.6.72"
 time = "0.1"

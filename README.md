@@ -24,5 +24,8 @@ Was it written by developers very new to Rust?
 If they were to re-write it now from scratch, would it be far more idiomatic and elegant?
 > Not as much as they'd have you believe!
 
+How likely is the interface to change between releases without notice?
+> Very
+
 Is the unadorned, simple name the result of the authors taking advantage of crates.io's first-come/first-serve flat namespace?
 > Totes! Gotta love it!
