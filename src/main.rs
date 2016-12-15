@@ -12,6 +12,7 @@ Collection of utilities for managing the rfc process.
 
 Usage:
     rfc new
+    rfc init
     rfc list (active | pending)
     rfc approve <rfc-id> <pr-id>
     rfc implement <rfc-id> <pr-id>
@@ -36,6 +37,8 @@ lazy_static! {
 lazy_static! {
     static ref PROJECT_NAME: String = project_name();
 }
+
+static DEFAULT_TEMPLATE: &'static str = include_str!("../templates/default.md");
 
 use std::process::Command;
 
@@ -90,6 +93,11 @@ fn main() {
 
     if args.get_bool("new") {
         new_rfc();
+        return;
+    }
+
+    if args.get_bool("init") {
+        init_rfcs();
         return;
     }
 
@@ -257,6 +265,20 @@ fn new_rfc() {
     cmd!("git", "add", "--intent-to-add", &out_filename).unwrap();
 
     println!("{}", out_filename);
+}
+
+fn init_rfcs() {
+    setup_rfcs_dir();
+    update_readme()
+        // Remove partial work if updating readme fails
+        .or_else(|_| fs::remove_dir_all("rfcs")).unwrap();
+}
+
+fn setup_rfcs_dir() {
+    fs::create_dir("rfcs").unwrap();
+    let mut file = fs::File::create("rfcs/0000-template.md").unwrap();
+    let mut buffer: Vec<u8> = DEFAULT_TEMPLATE.bytes().collect();
+    file.write_all(&mut buffer).unwrap();
 }
 
 fn rfc_branch_name(name: &str) -> String {

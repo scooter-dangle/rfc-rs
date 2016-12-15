@@ -1,6 +1,6 @@
 [package]
 name = "rfc"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Casey Robinson <casey@rampantmonkey.com>", "Scott Steele <scottlsteele@gmail.com>"]
 
 homepage = "https://github.com/scooter-dangle/rfc-rs"
