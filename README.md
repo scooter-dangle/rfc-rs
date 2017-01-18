@@ -38,3 +38,5 @@ How likely is the interface to change between releases without notice?
 
 Is the unadorned, simple name the result of the authors taking advantage of crates.io's first-come/first-serve flat namespace?
 > Totes! Gotta love it!
+
+# Active RFCs<!--- auto-generated section -->
