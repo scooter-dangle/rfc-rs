@@ -7,6 +7,10 @@ extern crate time;
 
 mod markdown;
 
+pub static GIT_COMMIT_HASH: &'static str = include_str!(concat!(env!("OUT_DIR"), "/git_commit_hash.txt"));
+pub static CRATE_VERSION: &'static str = include_str!(concat!(env!("OUT_DIR"), "/crate_version.txt"));
+pub static COMPILATION_TIMESTAMP: &'static str = include_str!(concat!(env!("OUT_DIR"), "/compilation_timestamp.txt"));
+
 static USAGE: &'static str = "
 Collection of utilities for managing the rfc process.
 
@@ -17,9 +21,11 @@ Usage:
     rfc approve <rfc-id> <pr-id>
     rfc implement <rfc-id> <pr-id>
     rfc (-h | --help)
+    rfc (-v | --version)
 
 Options:
     -h, --help      Show this message
+    -v, --version   Print version information and exit
 ";
 
 use docopt::Docopt;
@@ -90,6 +96,11 @@ fn main() {
     let args = Docopt::new(USAGE)
                       .and_then(|dopt| dopt.parse())
                       .unwrap_or_else(|e| e.exit());
+
+    if args.get_bool("-v") || args.get_bool("--version") {
+        print_version_information();
+        return;
+    }
 
     if args.get_bool("new") {
         new_rfc();
@@ -379,4 +390,8 @@ fn max_accepted_rfc_num() -> usize {
     list_accepted_rfc_nums().into_iter().map(|string_num| {
         string_num.parse::<usize>().unwrap()
     }).max().unwrap()
+}
+
+fn print_version_information() {
+    println!("rfc {} ({}) ({})", CRATE_VERSION, GIT_COMMIT_HASH, COMPILATION_TIMESTAMP);
 }
